@@ -275,6 +275,13 @@ main() {
           notice "Downloaded: $(sha256sum "openresty-$OPENRESTY_VER.tar.gz")"
         fi
         tar -xzf openresty-$OPENRESTY_VER.tar.gz
+        
+        # change the luajit version text
+        pushd openresty-$OPENRESTY_VER/bundle
+        lj_dir=$(ls -d LuaJIT*)
+        lj_update_time=$(echo ${lj_dir} | sed -e 's/LuaJIT-[[:digit:]]\+.[[:digit:]]\+-\([[:digit:]]\+\)/\1/')
+        sed -i "s/#define[[:space:]]\+LUAJIT_VERSION[[:space:]]\+\"LuaJIT \([[:digit:]]\+.[[:digit:]]\+.[[:digit:]]\+\).\+\"/#define LUAJIT_VERSION		\"LuaJIT \1-${lj_update_time}\"/" ${lj_dir}/src/luajit.h
+        popd
 
         # use unreleased version of lua-resty-dns
         if version_eq $OPENRESTY_VER 1.19.3; then
